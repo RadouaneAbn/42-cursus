@@ -1,0 +1,21 @@
+services:
+  web:
+    build: .
+    command: python app.py
+    ports:
+      - "5000:5000"
+    networks:
+      - app-net
+    # volumes:
+    #   - app-vol:/code
+  
+  redis:
+    image: 'redis:alpine'
+    networks:
+      - app-net
+
+networks:
+  app-net:
+
+volumes:
+  app-vol:
