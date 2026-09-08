@@ -1,0 +1,28 @@
+services:
+  maria-db:
+    container_name: maria-db
+    env_file:
+      - .env
+    build:
+      context: requirements/mariadb
+    volumes:
+      - mariadb_vlm:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    secrets:
+      - db_user_pass
+      - db_root_pass
+
+volumes:
+  mariadb_vlm:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/rabounou/data
+
+secrets:
+  db_user_pass:
+    file: ../secrets/db_user_pass.txt
+  db_root_pass:
+    file: ../secrets/db_root_pass.txt
