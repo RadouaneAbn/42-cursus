@@ -1,20 +1,63 @@
+NAME				=	inception
+FLAGS				=	-d --no-build
 
+COMPOSE_FILE		=	srcs/docker-compose.yml
+COMPOSE				=	docker compose -f $(COMPOSE_FILE)
 
-all:
-	docker compose -f srcs/docker-compose.yml up
+GREEN				=	\033[0;32m
+YELLOW				=	\033[0;33m
+RED					=	\033[0;31m
+RESET				=	\033[0m
 
-up:
-	docker compose -f srcs/docker-compose.yml up --build
+AT					=	@
+SILENT				=	> /dev/null 2>&1
+
+ifdef DBG
+	ifeq ($(DBG),1)
+		AT		=
+		SILENT	=
+		FLAGS	=
+	endif
+endif
+
+all: up
+
+up: build
+	@echo "$(YELLOW)⏳ starting containers...$(RESET)"
+	$(AT) $(COMPOSE) up $(FLAGS) $(SILENT)
+	@echo "$(GREEN)✅ Containers are up.$(RESET)"
+
+build:
+	@echo "$(YELLOW)⏳ Building containers...$(RESET)"
+	$(AT) $(COMPOSE) build $(SILENT)
+	@echo "$(GREEN)✅ Containers are built.$(RESET)"
 
 down:
-	docker compose -f srcs/docker-compose.yml down
+	@echo "$(YELLOW)⏳ Stopping containers...$(RESET)"
+	$(AT) $(COMPOSE) down > /dev/null 2>&1
+	@echo "$(GREEN)✅ Containers stopped.$(RESET)"
 
 clean: down
-	docker volume rm -f srcs_mariadb_vlm
+	@echo "$(YELLOW)⏳ Removing volumes...$(RESET)"
+	$(AT) $(COMPOSE) down --volumes > /dev/null 2>&1
+	@echo "$(GREEN)✅ Volumes removed.$(RESET)"
 
-fclean:
-	docker rm -f maria-db
-	docker rmi -f srcs-maria-db
-	docker system prune -f
+fclean: clean
+	@echo "$(YELLOW)⏳ Removing images...$(RESET)"
+	$(AT) $(COMPOSE) down --rmi all > /dev/null 2>&1
+	@echo "$(GREEN)✅ Images removed.$(RESET)"
+
+purge: fclean
+	@echo "$(RED)⏳ Pruning entire docker system...$(RESET)"
+	$(AT)docker system prune -af --volumes > /dev/null 2>&1
+	@echo "$(GREEN)✅ System pruned.$(RESET)"
 
 re: fclean up
+
+status:
+	$(AT)$(COMPOSE) ps
+
+logs:
+	$(AT)$(COMPOSE) logs -f
+
+.PHONY: all up down clean fclean purge re status logs
