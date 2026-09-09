@@ -9,8 +9,8 @@ YELLOW				=	\033[0;33m
 RED					=	\033[0;31m
 RESET				=	\033[0m
 
-AT					=	@
-SILENT				=	> /dev/null 2>&1
+# AT					=	@
+# SILENT				=	> /dev/null 2>&1
 
 ifdef DBG
 	ifeq ($(DBG),1)

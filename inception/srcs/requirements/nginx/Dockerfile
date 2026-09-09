@@ -1,9 +1,12 @@
 FROM debian:trixie-backports
 
+ARG DOMAIN_NAME
+ENV DOMAIN_NAME=${DOMAIN_NAME}
+
 RUN mkdir -p /etc/nginx/ssl
 
 RUN apt update && \
-    apt install -y nginx openssl curl && \
+    apt install -y nginx openssl curl gettext-base && \
     rm -rf /var/lib/apt/lists/* && \
     openssl req -x509 \
         -nodes \
@@ -11,11 +14,11 @@ RUN apt update && \
         -keyout /etc/nginx/ssl/inception.key \
         -out /etc/nginx/ssl/inception.crt \
         -days 365 \
-        -subj "/CN=rabounou.42.fr"
+        -subj "/CN=${DOMAIN_NAME}}"
 
 EXPOSE 443
 
 COPY conf/config.conf /etc/nginx/nginx.conf
+RUN envsubst < /etc/nginx/nginx.conf > /etc/nginx/nginx.conf
 
-# ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "nginx", "-g", "daemon off;" ]
