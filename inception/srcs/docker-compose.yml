@@ -22,14 +22,16 @@ services:
 
   nginx:
     container_name: nginx-container
-    environment:
-      WORDPRESS_PORT: "${WORDPRESS_PORT}"
-      DOMAIN_NAME: "${DOMAIN_NAME}"
     build:
       context: requirements/nginx
+      args:
+        DOMAIN_NAME: "${DOMAIN_NAME}"
+        WORDPRESS_PORT: "${WORDPRESS_PORT}"
     image: nginx:1.0
     ports:
       - "443:443"
+    volumes:
+      - wordpress_vlm:/var/www/wordpress/
     networks:
       - docker-network
     restart: on-failure
@@ -39,13 +41,18 @@ services:
   wordpress:
     container_name: wordpress-container
     environment:
+      DOMAIN_NAME: "${DOMAIN_NAME}"
       DB_USER: "${MARIADB_USER}"
       DB_NAME: "${MARIADB_NAME}"
       DB_PORT: "${MARIADB_PORT}"
       WP_ADMIN_USER: "${WP_ADMIN_USER}"
       WP_ADMIN_EMAIL: "${WP_ADMIN_EMAIL}"
+      WP_USER: "${WP_USER}"
+      WP_USER_EMAIL: "${WP_USER_EMAIL}"
     build:
       context: requirements/wordpress
+      args:
+        WORDPRESS_PORT: "${WORDPRESS_PORT}"
     image: wordpress:1.0
     ports:
       - "${WORDPRESS_HPORT}:${WORDPRESS_PORT}"
@@ -53,6 +60,8 @@ services:
       - db_user_pass
       - wp_admin_pass
       - wp_user_pass
+    volumes:
+      - wordpress_vlm:/var/www/wordpress
     networks:
       - docker-network
     restart: on-failure
@@ -67,6 +76,13 @@ volumes:
       o: bind
       device: /home/rabounou/data/mariadb
 
+  wordpress_vlm:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/rabounou/data/wordpress
+
 secrets:
   db_user_pass:
     file: ${MARIADB_USER_PASS_FILE}
@@ -80,3 +96,4 @@ secrets:
 networks:
   docker-network:
     driver: bridge
+    name: docker-network

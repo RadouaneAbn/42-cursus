@@ -23,12 +23,15 @@ RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.ph
     mv wp-cli.phar /usr/local/bin/wp
 
 COPY conf/www.conf /etc/php/8.4/fpm/pool.d/www.tmp
+
 RUN envsubst < /etc/php/8.4/fpm/pool.d/www.tmp \
     > /etc/php/8.4/fpm/pool.d/www.conf && \
     rm /etc/php/8.4/fpm/pool.d/www.tmp
 
 COPY tools/entrypoint.sh /entrypoint.sh
+
 RUN chmod +x /entrypoint.sh
+
 RUN mkdir -p /var/www/wordpress && \
     chown -R www-data:www-data /var/www/wordpress
 

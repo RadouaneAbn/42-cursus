@@ -4,6 +4,7 @@ ARG DOMAIN_NAME
 ARG WORDPRESS_PORT
 
 RUN apt update && apt install gettext-base
+
 RUN mkdir -p /etc/nginx/ssl
 
 RUN apt install -y nginx openssl curl && \
@@ -18,7 +19,13 @@ RUN apt install -y nginx openssl curl && \
 
 EXPOSE 443
 
+RUN mkdir -p /var/www/wordpress && \
+    chown -R www-data:www-data /var/www/wordpress
+
 COPY conf/config.conf /etc/nginx/nginx.tmp
-RUN envsubst '${DOMAIN_NAME} ${WORDPRESS_PORT}' < /etc/nginx/nginx.tmp > /etc/nginx/nginx.conf
+
+RUN envsubst '${DOMAIN_NAME} ${WORDPRESS_PORT}' \
+    < /etc/nginx/nginx.tmp > /etc/nginx/nginx.conf && \
+    rm /etc/nginx/nginx.tmp
 
 CMD [ "nginx", "-g", "daemon off;" ]
