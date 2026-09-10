@@ -28,7 +28,9 @@ up: build
 	@echo "$(GREEN)✅ Containers are up.$(RESET)"
 
 build:
-	@mkdir -p /home/rabounou/data/{mariadb,wordpress,portainer,adminer}
+	@mkdir -p /home/rabounou/data/mariadb
+	@mkdir -p /home/rabounou/data/wordpress
+	@mkdir -p /home/rabounou/data/portainer
 	@echo "$(YELLOW)⏳ Building containers...$(RESET)"
 	$(AT) $(COMPOSE) build $(SILENT)
 	@echo "$(GREEN)✅ Containers are built.$(RESET)"
@@ -55,7 +57,7 @@ purge: fclean
 
 re: fclean up
 
-status:
+ps:
 	$(AT)$(COMPOSE) ps
 
 logs:
