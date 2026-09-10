@@ -68,6 +68,27 @@ services:
     depends_on:
       - mariadb
 
+  portainer:
+    container_name: portainer-container
+    image: portainer/portainer-ce:lts
+    ports:
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - docker-network
+    restart: on-failure
+
+  adminer:
+    container_name: adminer-container
+    image: adminer:6
+    ports:
+      - "8080:8080"
+    networks:
+      - docker-network
+    restart: on-failure
+
 volumes:
   mariadb_vlm:
     driver: local
@@ -82,6 +103,13 @@ volumes:
       type: none
       o: bind
       device: /home/rabounou/data/wordpress
+
+  portainer_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/rabounou/data/portainer
 
 secrets:
   db_user_pass:

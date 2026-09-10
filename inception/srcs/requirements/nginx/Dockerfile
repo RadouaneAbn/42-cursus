@@ -15,7 +15,7 @@ RUN apt install -y nginx openssl curl && \
         -keyout /etc/nginx/ssl/inception.key \
         -out /etc/nginx/ssl/inception.crt \
         -days 365 \
-        -subj "/CN=${DOMAIN_NAME}}"
+        -subj "/CN=${DOMAIN_NAME}"
 
 EXPOSE 443
 

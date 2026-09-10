@@ -28,8 +28,7 @@ up: build
 	@echo "$(GREEN)✅ Containers are up.$(RESET)"
 
 build:
-	@mkdir -p /home/rabounou/data/mariadb
-	@mkdir -p /home/rabounou/data/wordpress
+	@mkdir -p /home/rabounou/data/{mariadb,wordpress,portainer,adminer}
 	@echo "$(YELLOW)⏳ Building containers...$(RESET)"
 	$(AT) $(COMPOSE) build $(SILENT)
 	@echo "$(GREEN)✅ Containers are built.$(RESET)"
