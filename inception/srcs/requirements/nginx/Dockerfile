@@ -1,12 +1,12 @@
 FROM debian:trixie-backports
 
 ARG DOMAIN_NAME
-ENV DOMAIN_NAME=${DOMAIN_NAME}
+ARG WORDPRESS_PORT
 
+RUN apt update && apt install gettext-base
 RUN mkdir -p /etc/nginx/ssl
 
-RUN apt update && \
-    apt install -y nginx openssl curl gettext-base && \
+RUN apt install -y nginx openssl curl && \
     rm -rf /var/lib/apt/lists/* && \
     openssl req -x509 \
         -nodes \
@@ -18,7 +18,7 @@ RUN apt update && \
 
 EXPOSE 443
 
-COPY conf/config.conf /etc/nginx/nginx.conf
-RUN envsubst < /etc/nginx/nginx.conf > /etc/nginx/nginx.conf
+COPY conf/config.conf /etc/nginx/nginx.tmp
+RUN envsubst '${DOMAIN_NAME} ${WORDPRESS_PORT}' < /etc/nginx/nginx.tmp > /etc/nginx/nginx.conf
 
 CMD [ "nginx", "-g", "daemon off;" ]
