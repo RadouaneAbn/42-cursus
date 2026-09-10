@@ -4,7 +4,6 @@ services:
     environment:
       DB_USER: "${MARIADB_USER}"
       DB_NAME: "${MARIADB_NAME}"
-      DB_PORT: "${MARIADB_PORT}"
     build:
       args:
         DB_PORT: "${MARIADB_PORT}"
