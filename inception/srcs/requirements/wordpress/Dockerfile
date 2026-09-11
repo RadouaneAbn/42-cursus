@@ -1,4 +1,4 @@
-FROM debian:trixie-backports
+FROM debian:13
 
 ARG WORDPRESS_PORT
 

@@ -1,4 +1,4 @@
-FROM debian:trixie-backports
+FROM debian:13
 
 RUN apt update && apt install -y gettext-base
 
