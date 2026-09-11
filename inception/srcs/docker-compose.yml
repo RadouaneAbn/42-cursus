@@ -33,6 +33,7 @@ services:
       args:
         DOMAIN_NAME: "${DOMAIN_NAME}"
         WORDPRESS_PORT: "${WORDPRESS_PORT}"
+        SERVER_PORT: "${SERVER_PORT}"
     image: nginx:1.0
     ports:
       - "443:443"

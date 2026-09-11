@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Docker, explained</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-panel: #12181f;
+    --bg-panel-2: #161d26;
+    --border: #26303b;
+    --text: #d9e0e8;
+    --text-dim: #8b98a5;
+    --accent: #2496ed;
+    --accent-dim: #1a6fb0;
+    --green: #57ab5a;
+    --mono: "SF Mono", "Menlo", "Consolas", "Liberation Mono", monospace;
+    --sans: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation: none !important; transition: none !important; }
+  }
+
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---------- Hero ---------- */
+
+  .hero {
+    padding: 100px 0 80px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero h1 {
+    font-family: var(--mono);
+    font-size: clamp(2rem, 6vw, 3.1rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 20px;
+    color: #fff;
+  }
+
+  .hero .lede {
+    font-size: 1.15rem;
+    color: var(--text-dim);
+    max-width: 56ch;
+    margin: 0 0 48px;
+  }
+
+  /* stack illustration */
+  .stack {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 8px;
+    max-width: 360px;
+  }
+
+  .stack .layer {
+    border: 1px solid var(--border);
+    background: var(--bg-panel);
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .stack .layer span.tag {
+    color: var(--accent);
+  }
+
+  .stack .layer.top {
+    background: var(--bg-panel-2);
+    border-color: var(--accent-dim);
+    color: var(--text);
+  }
+
+  /* ---------- Sections ---------- */
+
+  section {
+    padding: 64px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  section:last-of-type {
+    border-bottom: none;
+  }
+
+  h2 {
+    font-family: var(--mono);
+    font-size: 1.4rem;
+    color: #fff;
+    margin: 0 0 8px;
+  }
+
+  h2 .num {
+    color: var(--accent);
+    margin-right: 10px;
+  }
+
+  .section-body {
+    max-width: 62ch;
+  }
+
+  p {
+    margin: 0 0 16px;
+    max-width: 62ch;
+  }
+
+  p:last-child { margin-bottom: 0; }
+
+  strong { color: #fff; font-weight: 600; }
+
+  /* terminal mockup */
+  .terminal {
+    background: #0a0e13;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 22px 0;
+    overflow: hidden;
+  }
+
+  .terminal .bar {
+    display: flex;
+    gap: 6px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .terminal .bar span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #333d48;
+  }
+
+  .terminal pre {
+    margin: 0;
+    padding: 16px 18px;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    overflow-x: auto;
+    color: #c9d1d9;
+  }
+
+  .terminal .prompt { color: var(--green); }
+  .terminal .comment { color: var(--text-dim); }
+
+  /* comparison rows */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 22px 0;
+  }
+
+  @media (max-width: 560px) {
+    .compare { grid-template-columns: 1fr; }
+  }
+
+  .compare .box {
+    border: 1px solid var(--border);
+    background: var(--bg-panel);
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+
+  .compare .box h3 {
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    margin: 0 0 8px;
+    color: var(--accent);
+  }
+
+  .compare .box p {
+    font-size: 0.92rem;
+    color: var(--text-dim);
+    margin: 0;
+  }
+
+  /* container diagram */
+  .containers {
+    display: flex;
+    gap: 14px;
+    margin: 24px 0;
+    flex-wrap: wrap;
+  }
+
+  .containers .box {
+    flex: 1;
+    min-width: 140px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-panel);
+    padding: 16px;
+  }
+
+  .containers .box .label {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .containers .box .sub {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+  }
+
+  .os-base {
+    margin-top: 10px;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    text-align: center;
+  }
+
+  /* command reference table */
+  .ref {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 22px 0;
+    font-size: 0.9rem;
+  }
+
+  .ref td {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  .ref td:first-child {
+    font-family: var(--mono);
+    color: var(--accent);
+    padding-right: 20px;
+    white-space: nowrap;
+    width: 1%;
+  }
+
+  .ref td:last-child {
+    color: var(--text-dim);
+  }
+
+  footer {
+    padding: 48px 0 80px;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+
+  <div class="wrap hero">
+    <h1>Docker, explained</h1>
+    <p class="lede">
+      A way to package an application together with everything it needs to
+      run, so it behaves the same on your laptop, your teammate's laptop,
+      and a server somewhere you've never seen.
+    </p>
+
+    <div class="stack">
+      <div class="layer top"><span>your app + config</span><span class="tag">container</span></div>
+      <div class="layer"><span>dependencies & libraries</span></div>
+      <div class="layer"><span>runtime (node, python, php…)</span></div>
+      <div class="layer"><span>base OS files</span></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <section>
+      <h2><span class="num">01</span>The problem it solves</h2>
+      <div class="section-body">
+        <p>
+          Software rarely fails because the code is wrong. It fails because
+          the machine running it is slightly different — a missing library,
+          a different OS version, an environment variable nobody documented.
+          Developers call this <strong>"works on my machine."</strong>
+        </p>
+        <p>
+          Docker's answer is to stop installing software directly onto a
+          computer, and instead package the software with its entire
+          environment — OS files, runtime, dependencies, configuration —
+          into one unit that runs identically anywhere Docker is installed.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="num">02</span>Images and containers</h2>
+      <div class="section-body">
+        <p>
+          These two words get used interchangeably, but they mean different
+          things.
+        </p>
+
+        <div class="compare">
+          <div class="box">
+            <h3>image</h3>
+            <p>
+              A frozen snapshot: the filesystem, dependencies, and
+              instructions needed to run something. It doesn't do anything
+              by itself — think of it as a saved recipe.
+            </p>
+          </div>
+          <div class="box">
+            <h3>container</h3>
+            <p>
+              A running instance of an image. The image is the recipe; the
+              container is the dish, actually cooking, with a process
+              running inside it.
+            </p>
+          </div>
+        </div>
+
+        <p>
+          One image can spin up many containers, each isolated from the
+          others, each with its own filesystem and process space, all
+          sharing the same underlying image.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="num">03</span>Layers, and why they're fast</h2>
+      <div class="section-body">
+        <p>
+          An image is built in layers — one on top of another, as shown
+          above. Each instruction in a Dockerfile (install this, copy that)
+          adds a new layer. Docker caches layers, so if you change one line
+          near the end of a Dockerfile, only that layer and the ones after
+          it need to rebuild. Everything below is reused.
+        </p>
+        <p>
+          This is also why images are small to distribute over a network:
+          if two images share a base layer, that layer is only stored once.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="num">04</span>A minimal Dockerfile</h2>
+      <div class="section-body">
+        <p>
+          A <strong>Dockerfile</strong> is the recipe: plain-text
+          instructions describing how to build an image, top to bottom.
+        </p>
+
+        <div class="terminal">
+          <div class="bar"><span></span><span></span><span></span></div>
+          <pre><span class="comment"># start from a base image</span>
+FROM node:20-alpine
+
+<span class="comment"># copy your app in</span>
+WORKDIR /app
+COPY . .
+
+<span class="comment"># install dependencies</span>
+RUN npm install
+
+<span class="comment"># what to run when the container starts</span>
+CMD ["node", "server.js"]</pre>
+        </div>
+
+        <div class="terminal">
+          <div class="bar"><span></span><span></span><span></span></div>
+          <pre><span class="prompt">$</span> docker build -t my-app .
+<span class="comment"># turns the Dockerfile into an image</span>
+
+<span class="prompt">$</span> docker run -p 3000:3000 my-app
+<span class="comment"># starts a container from that image</span></pre>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="num">05</span>Isolation, without a full virtual machine</h2>
+      <div class="section-body">
+        <p>
+          Each container thinks it has its own filesystem, network, and
+          process tree — but unlike a virtual machine, it doesn't carry a
+          whole separate operating system. Containers share the host
+          machine's kernel and stay lightweight, which is why you can run
+          many of them side by side without much overhead.
+        </p>
+
+        <div class="containers">
+          <div class="box">
+            <div class="label">container A</div>
+            <div class="sub">web server</div>
+          </div>
+          <div class="box">
+            <div class="label">container B</div>
+            <div class="sub">database</div>
+          </div>
+          <div class="box">
+            <div class="label">container C</div>
+            <div class="sub">cache</div>
+          </div>
+        </div>
+        <div class="os-base">shared host kernel</div>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="num">06</span>Running several containers together</h2>
+      <div class="section-body">
+        <p>
+          Most real applications need more than one container: a web
+          server, a database, maybe a cache — each isolated, but able to
+          talk to each other. <strong>Docker Compose</strong> lets you
+          describe that whole setup in one file, and bring it all up with
+          one command instead of running each container by hand.
+        </p>
+
+        <div class="terminal">
+          <div class="bar"><span></span><span></span><span></span></div>
+          <pre><span class="comment"># docker-compose.yml</span>
+services:
+  web:
+    build: ./web
+    ports:
+      - "80:80"
+  database:
+    image: postgres:16</pre>
+        </div>
+
+        <div class="terminal">
+          <div class="bar"><span></span><span></span><span></span></div>
+          <pre><span class="prompt">$</span> docker compose up
+<span class="comment"># builds and starts every service defined above</span></pre>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="num">07</span>Commands you'll actually use</h2>
+      <div class="section-body">
+        <table class="ref">
+          <tr><td>docker ps</td><td>list running containers</td></tr>
+          <tr><td>docker images</td><td>list images on this machine</td></tr>
+          <tr><td>docker build -t name .</td><td>build an image from a Dockerfile</td></tr>
+          <tr><td>docker run image</td><td>start a container from an image</td></tr>
+          <tr><td>docker stop id</td><td>stop a running container</td></tr>
+          <tr><td>docker logs id</td><td>see a container's output</td></tr>
+          <tr><td>docker exec -it id sh</td><td>open a shell inside a running container</td></tr>
+          <tr><td>docker compose up</td><td>start every service in a compose file</td></tr>
+          <tr><td>docker compose down</td><td>stop and remove them</td></tr>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <div class="wrap">
+      A short primer on Docker — images, containers, layers, and Compose.
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,3 +1,13 @@
 #!/bin/bash
 
-kill -0 1
+echo '<?php echo "OK"; ?>' > /tmp/health.php
+
+if SCRIPT_FILENAME=/tmp/health.php \
+   REQUEST_METHOD=GET \
+   cgi-fcgi -bind -connect 127.0.0.1:9000 \
+   | grep -q "OK"
+then
+    exit 0
+fi
+
+exit 1

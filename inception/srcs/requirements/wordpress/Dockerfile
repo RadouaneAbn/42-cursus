@@ -5,7 +5,6 @@ ARG WORDPRESS_PORT
 COPY tools/healthcheck.sh .
 RUN chmod +x /healthcheck.sh
 
-
 RUN apt update && apt install -y gettext-base
 
 RUN apt install -y \
@@ -19,7 +18,8 @@ RUN apt install -y \
         php8.4-gd \
         php8.4-mbstring \
         php8.4-xml \
-        php8.4-zip && \
+        php8.4-zip \
+        libfcgi-bin && \
     rm -rf /var/lib/apt/lists/*
 
 RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
