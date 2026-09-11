@@ -11,8 +11,6 @@ services:
     image: mariadb:1.0
     volumes:
       - mariadb_vlm:/var/lib/mysql/
-    ports:
-      - "${MARIADB_HPORT}:${MARIADB_PORT}"
     secrets:
       - db_user_pass
       - db_root_pass
@@ -33,6 +31,7 @@ services:
         DOMAIN_NAME: "${DOMAIN_NAME}"
         WORDPRESS_PORT: "${WORDPRESS_PORT}"
         SERVER_PORT: "${SERVER_PORT}"
+        PORTAINER_PORT: "${PORTAINER_PORT}"
     image: nginx:1.0
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
@@ -62,8 +61,6 @@ services:
       args:
         WORDPRESS_PORT: "${WORDPRESS_PORT}"
     image: wordpress:1.0
-    ports:
-      - "${WORDPRESS_HPORT}:${WORDPRESS_PORT}"
     secrets:
       - db_user_pass
       - wp_admin_pass
@@ -82,17 +79,17 @@ services:
       mariadb:
         condition: service_healthy
 
-  # portainer:
-  #   container_name: portainer-container
-  #   image: portainer/portainer-ce:lts
-  #   ports:
-  #     - "9443:9443"
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #     - portainer_data:/data
-  #   networks:
-  #     - docker-network
-  #   restart: on-failure
+  portainer:
+    container_name: portainer-container
+    build:
+      context: requirements/bonus/portainer
+    image: portainer:1.0
+    volumes:
+      - portainer_vlm:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - docker-network
+    restart: on-failure
 
   # adminer:
   #   container_name: adminer-container
