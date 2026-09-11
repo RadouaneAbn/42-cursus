@@ -18,6 +18,12 @@ services:
       - db_root_pass
     networks:
       - docker-network
+    healthcheck:
+      test: ["CMD", "/healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      # start_period: 30s
     restart: on-failure
 
   nginx:
@@ -36,7 +42,8 @@ services:
       - docker-network
     restart: on-failure
     depends_on:
-      - wordpress
+      wordpress:
+        condition: service_healthy
   
   wordpress:
     container_name: wordpress-container
@@ -65,29 +72,36 @@ services:
     networks:
       - docker-network
     restart: on-failure
+    healthcheck:
+      test: ["CMD", "/healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
 
-  portainer:
-    container_name: portainer-container
-    image: portainer/portainer-ce:lts
-    ports:
-      - "9443:9443"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
-    networks:
-      - docker-network
-    restart: on-failure
+  # portainer:
+  #   container_name: portainer-container
+  #   image: portainer/portainer-ce:lts
+  #   ports:
+  #     - "9443:9443"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - portainer_data:/data
+  #   networks:
+  #     - docker-network
+  #   restart: on-failure
 
-  adminer:
-    container_name: adminer-container
-    image: adminer:6
-    ports:
-      - "8080:8080"
-    networks:
-      - docker-network
-    restart: on-failure
+  # adminer:
+  #   container_name: adminer-container
+  #   image: adminer:6
+  #   ports:
+  #     - "8080:8080"
+  #   networks:
+  #     - docker-network
+  #   restart: on-failure
 
 volumes:
   mariadb_vlm:

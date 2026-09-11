@@ -5,6 +5,13 @@ chown -R www-data:www-data /var/www/wordpress
 chmod -R 775 /var/www/wordpress
 
 if [ ! -f /var/www/wordpress/wp-config.php ]; then
+    if [ ! -r /run/secrets/db_user_pass ] || \
+       [ ! -r /run/secrets/wp_user_pass ] || \
+       [ ! -r /run/secrets/wp_admin_pass ]; then
+        echo "Missing required secrets. Please check your Docker secrets configuration."
+        exit 1
+    fi
+
     DB_USER_PASS=$(cat /run/secrets/db_user_pass)
     WP_USER_PASS=$(cat /run/secrets/wp_user_pass)
     WP_ADMIN_PASS=$(cat /run/secrets/wp_admin_pass)

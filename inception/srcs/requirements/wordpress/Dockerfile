@@ -2,6 +2,10 @@ FROM debian:trixie-backports
 
 ARG WORDPRESS_PORT
 
+COPY tools/healthcheck.sh .
+RUN chmod +x /healthcheck.sh
+
+
 RUN apt update && apt install -y gettext-base
 
 RUN apt install -y \
