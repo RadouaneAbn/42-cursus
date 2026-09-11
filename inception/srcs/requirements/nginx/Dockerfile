@@ -11,7 +11,7 @@ RUN apt update && apt install gettext-base
 
 RUN mkdir -p /etc/nginx/ssl
 
-RUN apt install -y nginx openssl curl && \
+RUN apt install -y nginx openssl curl ca-certificates && \
     rm -rf /var/lib/apt/lists/* && \
     openssl req -x509 \
         -nodes \
@@ -27,6 +27,9 @@ RUN mkdir -p /var/www/wordpress && \
     chown -R www-data:www-data /var/www/wordpress
 
 COPY conf/config.conf /etc/nginx/nginx.tmp
+COPY tools/healthcheck.sh /healthcheck.sh
+
+RUN chmod +x /healthcheck.sh
 
 RUN envsubst '${DOMAIN_NAME} ${WORDPRESS_PORT} ${SERVER_PORT} ${PORTAINER_PORT} ${STATIC_WEBSITE_PORT} ${ADMINER_PORT}' \
     < /etc/nginx/nginx.tmp > /etc/nginx/nginx.conf && \

@@ -4,7 +4,9 @@ ARG ADMINER_PORT
 ENV ADMINER_PORT=${ADMINER_PORT}
 
 COPY tools/entrypoint.sh /entrypoint.sh
+COPY tools/healthcheck.sh /healthcheck.sh
 RUN chmod +x /entrypoint.sh
+RUN chmod +x /healthcheck.sh
 
 RUN apt-get update && \
     apt-get install -y \

@@ -41,6 +41,11 @@ services:
       - wordpress_vlm:/var/www/wordpress/
     networks:
       - docker-network
+    healthcheck:
+      test: ["CMD", "/healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: on-failure
     depends_on:
       wordpress:
@@ -93,6 +98,11 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - docker-network
+    healthcheck:
+      test: ["CMD", "/healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: on-failure
 
   adminer:
@@ -104,6 +114,11 @@ services:
     image: adminer:1.0
     networks:
       - docker-network
+    healthcheck:
+      test: ["CMD", "/healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: on-failure
 
   static_website:
@@ -115,6 +130,11 @@ services:
     image: static_website:1.0
     networks:
       - docker-network
+    healthcheck:
+      test: ["CMD", "/healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: on-failure
 
 volumes:
