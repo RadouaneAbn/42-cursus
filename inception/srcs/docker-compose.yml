@@ -32,6 +32,8 @@ services:
         WORDPRESS_PORT: "${WORDPRESS_PORT}"
         SERVER_PORT: "${SERVER_PORT}"
         PORTAINER_PORT: "${PORTAINER_PORT}"
+        STATIC_WEBSITE_PORT: "${STATIC_WEBSITE_PORT}"
+        ADMINER_PORT: "${ADMINER_PORT}"
     image: nginx:1.0
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
@@ -83,6 +85,8 @@ services:
     container_name: portainer-container
     build:
       context: requirements/bonus/portainer
+      args:
+        PORTAINER_PORT: "${PORTAINER_PORT}"
     image: portainer:1.0
     volumes:
       - portainer_vlm:/data
@@ -91,14 +95,27 @@ services:
       - docker-network
     restart: on-failure
 
-  # adminer:
-  #   container_name: adminer-container
-  #   image: adminer:6
-  #   ports:
-  #     - "8080:8080"
-  #   networks:
-  #     - docker-network
-  #   restart: on-failure
+  adminer:
+    container_name: adminer-container
+    build:
+      context: requirements/bonus/adminer
+      args:
+        ADMINER_PORT: "${ADMINER_PORT}"
+    image: adminer:1.0
+    networks:
+      - docker-network
+    restart: on-failure
+
+  static_website:
+    container_name: static_website-container
+    build:
+      context: requirements/bonus/static
+      args:
+        STATIC_WEBSITE_PORT: "${STATIC_WEBSITE_PORT}"
+    image: static_website:1.0
+    networks:
+      - docker-network
+    restart: on-failure
 
 volumes:
   mariadb_vlm:

@@ -3,6 +3,9 @@ FROM debian:13
 ARG DOMAIN_NAME
 ARG WORDPRESS_PORT
 ARG SERVER_PORT
+ARG STATIC_WEBSITE_PORT
+ARG PORTAINER_PORT
+ARG ADMINER_PORT
 
 RUN apt update && apt install gettext-base
 
@@ -25,10 +28,8 @@ RUN mkdir -p /var/www/wordpress && \
 
 COPY conf/config.conf /etc/nginx/nginx.tmp
 
-RUN envsubst '${DOMAIN_NAME} ${WORDPRESS_PORT} ${SERVER_PORT}' \
+RUN envsubst '${DOMAIN_NAME} ${WORDPRESS_PORT} ${SERVER_PORT} ${PORTAINER_PORT} ${STATIC_WEBSITE_PORT} ${ADMINER_PORT}' \
     < /etc/nginx/nginx.tmp > /etc/nginx/nginx.conf && \
     rm /etc/nginx/nginx.tmp
-
-COPY tools/index.html /var/www/html/index.html
 
 CMD [ "nginx", "-g", "daemon off;" ]
