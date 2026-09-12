@@ -15,9 +15,9 @@ RUN chmod +x /healthcheck.sh
 RUN apt install -y mariadb-server mariadb-client && \
     rm -rf /var/lib/apt/lists/*
 
-COPY conf/mariadb.cnf /tmp/mariadb.tmp
-RUN envsubst < /tmp/mariadb.tmp \
-    > /etc/mysql/mariadb.conf.d/mariadb.cnf
+COPY conf/50-server.cnf /tmp/50-server.tmp
+RUN envsubst < /tmp/50-server.tmp \
+    > /etc/mysql/mariadb.conf.d/50-server.cnf
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD ["mariadbd"]

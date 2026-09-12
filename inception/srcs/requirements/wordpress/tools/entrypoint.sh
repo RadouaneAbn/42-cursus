@@ -16,6 +16,11 @@ if [ ! -f /var/www/wordpress/wp-config.php ]; then
     WP_USER_PASS=$(cat /run/secrets/wp_user_pass)
     WP_ADMIN_PASS=$(cat /run/secrets/wp_admin_pass)
 
+    if [ -z "$DB_USER_PASS" ] || [ -z "$WP_USER_PASS" ] || [ -z "$WP_ADMIN_PASS" ]; then
+        echo "Error: One or more required secrets are empty."
+        exit 1
+    fi
+
     wp core download --allow-root --path=/var/www/wordpress
 
     wp config create \

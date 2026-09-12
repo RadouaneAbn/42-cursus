@@ -2,11 +2,11 @@ services:
   mariadb:
     container_name: mariadb-container
     environment:
-      DB_USER: "${MARIADB_USER}"
-      DB_NAME: "${MARIADB_NAME}"
+      DB_USER: "${MARIADB_USER:?MARIADB_USER environment variable is not set}"
+      DB_NAME: "${MARIADB_NAME:?MARIADB_NAME environment variable is not set}"
     build:
       args:
-        DB_PORT: "${MARIADB_PORT}"
+        DB_PORT: "${MARIADB_PORT:?MARIADB_PORT environment variable is not set}"
       context: requirements/mariadb
     image: mariadb:1.0
     volumes:
@@ -28,15 +28,15 @@ services:
     build:
       context: requirements/nginx
       args:
-        DOMAIN_NAME: "${DOMAIN_NAME}"
-        WORDPRESS_PORT: "${WORDPRESS_PORT}"
-        SERVER_PORT: "${SERVER_PORT}"
-        PORTAINER_PORT: "${PORTAINER_PORT}"
-        STATIC_WEBSITE_PORT: "${STATIC_WEBSITE_PORT}"
-        ADMINER_PORT: "${ADMINER_PORT}"
+        DOMAIN_NAME: "${DOMAIN_NAME:?DOMAIN_NAME environment variable is not set}"
+        WORDPRESS_PORT: "${WORDPRESS_PORT:?WORDPRESS_PORT environment variable is not set}"
+        SERVER_PORT: "${SERVER_PORT:?SERVER_PORT environment variable is not set}"
+        PORTAINER_PORT: "${PORTAINER_PORT:?PORTAINER_PORT environment variable is not set}"
+        STATIC_WEBSITE_PORT: "${STATIC_WEBSITE_PORT:?STATIC_WEBSITE_PORT environment variable is not set}"
+        ADMINER_PORT: "${ADMINER_PORT:?ADMINER_PORT environment variable is not set}"
     image: nginx:1.0
     ports:
-      - "${SERVER_PORT}:${SERVER_PORT}"
+      - "${SERVER_PORT:?SERVER_PORT environment variable is not set}:${SERVER_PORT}"
     volumes:
       - wordpress_vlm:/var/www/wordpress/
     networks:
@@ -54,19 +54,19 @@ services:
   wordpress:
     container_name: wordpress-container
     environment:
-      DOMAIN_NAME: "${DOMAIN_NAME}"
-      DB_USER: "${MARIADB_USER}"
-      DB_NAME: "${MARIADB_NAME}"
-      DB_PORT: "${MARIADB_PORT}"
-      WP_ADMIN_USER: "${WP_ADMIN_USER}"
-      WP_ADMIN_EMAIL: "${WP_ADMIN_EMAIL}"
-      WP_USER: "${WP_USER}"
-      WP_USER_EMAIL: "${WP_USER_EMAIL}"
-      WORDPRESS_PORT: "${WORDPRESS_PORT}"
+      DOMAIN_NAME: "${DOMAIN_NAME:?DOMAIN_NAME environment variable is not set}"
+      DB_USER: "${MARIADB_USER:?MARIADB_USER environment variable is not set}"
+      DB_NAME: "${MARIADB_NAME:?MARIADB_NAME environment variable is not set}"
+      DB_PORT: "${MARIADB_PORT:?MARIADB_PORT environment variable is not set}"
+      WP_ADMIN_USER: "${WP_ADMIN_USER:?WP_ADMIN_USER environment variable is not set}"
+      WP_ADMIN_EMAIL: "${WP_ADMIN_EMAIL:?WP_ADMIN_EMAIL environment variable is not set}"
+      WP_USER: "${WP_USER:?WP_USER environment variable is not set}"
+      WP_USER_EMAIL: "${WP_USER_EMAIL:?WP_USER_EMAIL environment variable is not set}"
+      WORDPRESS_PORT: "${WORDPRESS_PORT:?WORDPRESS_PORT environment variable is not set}"
     build:
       context: requirements/wordpress
       args:
-        WORDPRESS_PORT: "${WORDPRESS_PORT}"
+        WORDPRESS_PORT: "${WORDPRESS_PORT:?WORDPRESS_PORT environment variable is not set}"
     image: wordpress:1.0
     secrets:
       - db_user_pass
@@ -91,7 +91,7 @@ services:
     build:
       context: requirements/bonus/portainer
       args:
-        PORTAINER_PORT: "${PORTAINER_PORT}"
+        PORTAINER_PORT: "${PORTAINER_PORT:?PORTAINER_PORT environment variable is not set}"
     image: portainer:1.0
     volumes:
       - portainer_vlm:/data
@@ -110,7 +110,7 @@ services:
     build:
       context: requirements/bonus/adminer
       args:
-        ADMINER_PORT: "${ADMINER_PORT}"
+        ADMINER_PORT: "${ADMINER_PORT:?ADMINER_PORT environment variable is not set}"
     image: adminer:1.0
     networks:
       - docker-network
@@ -126,7 +126,7 @@ services:
     build:
       context: requirements/bonus/static
       args:
-        STATIC_WEBSITE_PORT: "${STATIC_WEBSITE_PORT}"
+        STATIC_WEBSITE_PORT: "${STATIC_WEBSITE_PORT:?STATIC_WEBSITE_PORT environment variable is not set}"
     image: static_website:1.0
     networks:
       - docker-network
@@ -164,13 +164,13 @@ volumes:
 
 secrets:
   db_user_pass:
-    file: ${MARIADB_USER_PASS_FILE}
+    file: ${MARIADB_USER_PASS_FILE:?MARIADB_USER_PASS_FILE environment variable is not set}
   db_root_pass:
-    file: ${MARIADB_ROOT_PASS_FILE}
+    file: ${MARIADB_ROOT_PASS_FILE:?MARIADB_ROOT_PASS_FILE environment variable is not set}
   wp_admin_pass:
-    file: ${WP_ADMIN_PASS_FILE}
+    file: ${WP_ADMIN_PASS_FILE:?WP_ADMIN_PASS_FILE environment variable is not set}
   wp_user_pass:
-    file: ${WP_USER_PASS_FILE}
+    file: ${WP_USER_PASS_FILE:?WP_USER_PASS_FILE environment variable is not set}
 
 networks:
   docker-network:

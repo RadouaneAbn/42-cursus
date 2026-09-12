@@ -2,9 +2,6 @@ FROM debian:13
 
 ARG WORDPRESS_PORT
 
-COPY tools/healthcheck.sh .
-RUN chmod +x /healthcheck.sh
-
 RUN apt update && apt install -y gettext-base
 
 RUN apt install -y \
@@ -32,9 +29,10 @@ RUN envsubst < /etc/php/8.4/fpm/pool.d/www.tmp \
     > /etc/php/8.4/fpm/pool.d/www.conf && \
     rm /etc/php/8.4/fpm/pool.d/www.tmp
 
-COPY tools/entrypoint.sh /entrypoint.sh
-
+COPY tools/entrypoint.sh .
 RUN chmod +x /entrypoint.sh
+COPY tools/healthcheck.sh .
+RUN chmod +x /healthcheck.sh
 
 RUN mkdir -p /var/www/wordpress && \
     chown -R www-data:www-data /var/www/wordpress
