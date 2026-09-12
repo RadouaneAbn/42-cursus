@@ -1,4 +1,4 @@
-FROM debian:13
+FROM debian:bookworm
 
 ARG ADMINER_PORT
 ENV ADMINER_PORT=${ADMINER_PORT}
@@ -8,10 +8,10 @@ COPY tools/healthcheck.sh /healthcheck.sh
 RUN chmod +x /entrypoint.sh
 RUN chmod +x /healthcheck.sh
 
-RUN apt-get update && \
-    apt-get install -y \
-        php8.4 \
-        php8.4-mysqli \
+RUN apt update && \
+    apt install -y \
+        php8.2 \
+        php8.2-mysqli \
         curl \
         ca-certificates \
     && rm -rf /var/lib/apt/lists/*

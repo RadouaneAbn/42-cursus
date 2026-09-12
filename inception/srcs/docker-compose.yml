@@ -8,7 +8,7 @@ services:
       args:
         DB_PORT: "${MARIADB_PORT:?MARIADB_PORT environment variable is not set}"
       context: requirements/mariadb
-    image: mariadb:1.0
+    image: mariadb
     volumes:
       - mariadb_vlm:/var/lib/mysql/
     secrets:
@@ -34,7 +34,7 @@ services:
         PORTAINER_PORT: "${PORTAINER_PORT:?PORTAINER_PORT environment variable is not set}"
         STATIC_WEBSITE_PORT: "${STATIC_WEBSITE_PORT:?STATIC_WEBSITE_PORT environment variable is not set}"
         ADMINER_PORT: "${ADMINER_PORT:?ADMINER_PORT environment variable is not set}"
-    image: nginx:1.0
+    image: nginx
     ports:
       - "${SERVER_PORT:?SERVER_PORT environment variable is not set}:${SERVER_PORT}"
     volumes:
@@ -67,7 +67,7 @@ services:
       context: requirements/wordpress
       args:
         WORDPRESS_PORT: "${WORDPRESS_PORT:?WORDPRESS_PORT environment variable is not set}"
-    image: wordpress:1.0
+    image: wordpress
     secrets:
       - db_user_pass
       - wp_admin_pass

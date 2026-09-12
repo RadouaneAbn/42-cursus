@@ -1,15 +1,14 @@
-FROM debian:13
+FROM debian:bookworm
 
 ARG STATIC_WEBSITE_PORT
 
-RUN apt-get update && \
-    apt-get install -y nginx curl ca-certificates gettext-base && \
+RUN apt update && \
+    apt install -y nginx curl ca-certificates gettext-base && \
     rm -rf /var/lib/apt/lists/*
 
 COPY tools/index.html /var/www/html/index.html
 COPY conf/nginx.conf /etc/nginx/nginx.tmp
 COPY tools/healthcheck.sh /healthcheck.sh
-
 RUN chmod +x /healthcheck.sh
 
 RUN envsubst '${STATIC_WEBSITE_PORT}' \

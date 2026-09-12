@@ -1,4 +1,4 @@
-FROM debian:13
+FROM debian:bookworm
 
 ARG DOMAIN_NAME
 ARG WORDPRESS_PORT
